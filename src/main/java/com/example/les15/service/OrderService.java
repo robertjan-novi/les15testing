@@ -1,13 +1,12 @@
 package com.example.les15.service;
 
 import com.example.les15.dto.OrderDto;
+import com.example.les15.exception.ResourceNotFoundException;
 import com.example.les15.model.Order;
 import com.example.les15.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class OrderService {
@@ -33,21 +32,13 @@ public class OrderService {
     }
 
     public OrderDto getOrder(int orderid) {
-        Optional<Order> oo = orderRepos.findById(orderid);
-        if (oo.isPresent()) {
-            Order o = oo.get();
-            return transferToDto(o);
-        }
-        return null;
+        Order o = orderRepos.findById(orderid).orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+        return transferToDto(o);
     }
 
     public double getAmount(int orderid) {
-        Optional<Order> oo = orderRepos.findById(orderid);
-        if (oo.isPresent()) {
-            Order o = oo.get();
-            return o.calculateAmount();
-        }
-        return -1;
+        Order o = orderRepos.findById(orderid).orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+        return o.calculateAmount();
     }
 
     private static OrderDto transferToDto(Order o) {
